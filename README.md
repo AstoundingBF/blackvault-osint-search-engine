@@ -9,7 +9,8 @@
 
   </p>
 </div>
-## About The Project
+
+### About The Project
 
 BlackVault is an open-source OSINT (Open Source Intelligence) search engine that allows you to search for information across various data sources. It provides a user-friendly interface for querying and retrieving relevant information.
 
