@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search App</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+    }
+    .container {
+      max-width: 600px;
+      margin-top: 100px;
+    }
+    label {
+      color: #fff;
+    }
+    input.form-control {
+      background-color: #212121;
+      color: #fff;
+      border: 1px solid #ccc;
+    }
+    input.form-control:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    button.btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    button.btn-primary:hover {
+      background-color: #0069d9;
+      border-color: #0062cc;
+    }
+    .login-logout {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .login-logout .login-btn,
+    .login-logout .register-btn,
+    .login-logout .logout-btn {
+      color: #fff;
+      margin-left: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-logout">
+      <% if session[:logged_in] %>
+        <div class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+      <% else %>
+        <div class="login-btn" onclick="redirect('/login')">
+          <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <div class="register-btn" onclick="redirect('/register')">
+          <i class="fas fa-user-plus"></i>
+        </div>
+      <% end %>
+    </div>
+    <h2 class="mb-4">Search</h2>
+    <form action="/search" method="post">
+      <div class="form-group">
+        <label for="query">Search Query</label>
+        <input type="text" class="form-control" id="query" name="query" required>
+      </div>
+      <div class="form-group">
+        <label for="search_terms">Search Terms (optional)</label>
+        <input type="text" class="form-control" id="search_terms" name="search_terms" placeholder="term1: value1, term2: value2">
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+  <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+  <script>
+    function redirect(url) {
+      window.location.href = url;
+    }
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+  </script>
+</body>
+</html>

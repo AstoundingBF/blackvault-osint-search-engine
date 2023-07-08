@@ -1,0 +1,6 @@
+ID,Relevance,firstName,lastName,Email,DOB,Password,source
+1,50,John,Doe,johndoe@example.com,1985-10-15,pass123,source A
+2,75,Jane,Smith,janesmith@example.com,1990-08-20,secret456,source B
+3,60,Michael,Johnson,michaeljohnson@example.com,1988-04-05,p@$$w0rd,source C
+4,80,Sarah,Williams,sarahwilliams@example.com,1995-12-10,12345678,source D
+5,70,David,Brown,davidbrown@example.com,1983-06-25,letmein,source E

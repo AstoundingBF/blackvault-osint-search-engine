@@ -1,0 +1,30 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    bcrypt (3.1.19)
+    csv (3.2.7)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
+    mysql2 (0.5.5)
+    rack (2.2.7)
+    rack-protection (3.0.6)
+      rack
+    ruby2_keywords (0.0.5)
+    sinatra (3.0.6)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.6)
+      tilt (~> 2.0)
+    tilt (2.2.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  bcrypt
+  csv
+  mysql2
+  sinatra
+
+BUNDLED WITH
+   2.3.5

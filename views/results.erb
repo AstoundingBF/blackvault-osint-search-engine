@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Results</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+    }
+    .container {
+      max-width: 800px;
+      margin-top: 50px;
+    }
+    .card {
+      margin-bottom: 20px;
+      background-color: #212121;
+      color: #000;
+      position: relative; /* Added position relative for button positioning */
+    }
+    .card-header {
+      background-color: #212121;
+      font-weight: bold;
+      color: #fff;
+      position: relative;
+    }
+    .card-body {
+      padding-top: 10px;
+    }
+    .relevance {
+      color: #007bff;
+      font-weight: bold;
+    }
+    .export-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 20px;
+    }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 45px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 20px;
+    }
+    .copy-button:hover {
+      color: #007bff;
+    }
+    .export-popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .export-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: #343a40;
+      border-radius: 5px;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .export-popup h4 {
+      margin-top: 0;
+      color: #fff;
+    }
+    .export-popup p {
+      margin-bottom: 10px;
+      color: #fff;
+    }
+    .export-popup input[type="number"] {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+      background-color: #212121;
+      color: #fff;
+      border: 1px solid #ccc;
+    }
+    .export-popup input[type="number"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .export-popup button {
+      padding: 5px 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .export-popup button:hover {
+      background-color: #0069d9;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    .copy-button {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 20px;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <% if results.any? %>
+      <h2 class="mb-4">Search Results</h2>
+      <div class="export-icon" onclick="toggleExportPopup()">
+        <i class="fas fa-file-export"></i>
+      </div>
+      <% results.each do |result| %>
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title">ID: <%= result['ID'] %></h5>
+            <p class="relevance">Relevance: <%= result['Relevance'] %>%</p>
+            <i class="fas fa-copy copy-button" onclick="copyResult('<%= result['ID'] %>', '<%= result['Relevance'] %>', '<%= result['firstName'] %>', '<%= result['lastName'] %>', '<%= result['Email'] %>', '<%= result['DOB'] %>', '<%= result['Password'] %>', '<%= result['source'] %>')" title="Copy"></i>          </div>
+          <div class="card-body">
+            <ul class="list-group">
+              <% if result['firstName'] %>
+                <li class="list-group-item">FirstName: <%= result['firstName'] %></li>
+              <% end %>
+              <% if result['lastName'] %>
+                <li class="list-group-item">LastName: <%= result['lastName'] %></li>
+              <% end %>
+              <% if result['Email'] %>
+                <li class="list-group-item">Email: <%= result['Email'] %></li>
+              <% end %>
+              <% if result['DOB'] %>
+                <li class="list-group-item">DOB: <%= result['DOB'] %></li>
+              <% end %>
+              <% if result['Password'] %>
+                <li class="list-group-item">Password: <%= result['Password'] %></li>
+              <% end %>
+              <% if result['source'] %>
+                <li class="list-group-item">Source: <%= result['source'] %></li>
+              <% end %>              
+            </ul>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="export-popup-overlay" id="exportPopupOverlay"></div>
+      <div class="export-popup" id="exportPopup">
+        <h4>Export Records</h4>
+        <p>Specify the number of records to export:</p>
+        <input type="number" id="numRecords" min="1" max="<%= results.length %>" required>
+        <button onclick="exportRecords()">Export</button>
+      </div>
+    <% else %>
+      <p>No results found.</p>
+    <% end %>
+
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+    <script>
+    function toggleExportPopup() {
+      var overlay = document.getElementById('exportPopupOverlay');
+      var popup = document.getElementById('exportPopup');
+      overlay.style.display = overlay.style.display === 'none' ? 'block' : 'none';
+      popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+    }
+  
+    function copyResult(ID, relevance, firstName, lastName, email, DOB, password, source) {
+      var formattedText = '';
+      formattedText += 'ID: ' + ID + '\n';
+      formattedText += 'Relevance: ' + relevance + '%\n';
+      formattedText += 'FirstName: ' + firstName + '\n';
+      formattedText += 'LastName: ' + lastName + '\n';
+      formattedText += 'Email: ' + email + '\n';
+      formattedText += 'DOB: ' + DOB + '\n';
+      formattedText += 'Password: ' + password + '\n';
+      formattedText += 'Source: ' + source + '\n';
+   
+
+  
+      navigator.clipboard.writeText(formattedText).then(function() {
+        alert('Card data copied!');
+      }).catch(function() {
+        alert('Copying failed. Please try again.');
+      });
+    }
+  
+    function exportRecords() {
+      var numRecords = document.getElementById('numRecords').value;
+      if (numRecords !== '') {
+        window.location.href = '/export?num_records=' + numRecords;
+      }
+    }
+  </script>
+  
+  </div>
+</body>
+</html>
