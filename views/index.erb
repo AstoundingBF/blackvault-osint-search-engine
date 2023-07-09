@@ -33,57 +33,84 @@
       background-color: #0069d9;
       border-color: #0062cc;
     }
-    .login-logout {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .login-logout .login-btn,
-    .login-logout .register-btn,
-    .login-logout .logout-btn {
+    .made-with-love {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
       color: #fff;
-      margin-left: 10px;
-      font-size: 20px;
+    }
+    .faq-question {
+      font-weight: bold;
+      margin-top: 20px;
       cursor: pointer;
+      color: #fff;
+    }
+    .faq-answer {
+      display: none;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+    .search-section {
+      margin-bottom: 40px;
     }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <div class="login-logout">
-      <% if session[:logged_in] %>
-        <div class="logout-btn" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i>
+    <div class="search-section">
+      <h2 class="mb-4">Search</h2>
+      <form action="/search" method="post">
+        <div class="form-group">
+          <label for="query">Search Query</label>
+          <input type="text" class="form-control" id="query" name="query" required>
         </div>
-      <% else %>
-        <div class="login-btn" onclick="redirect('/login')">
-          <i class="fas fa-sign-in-alt"></i>
+
+        <div class="form-group">
+          <label for="search_terms">Search Terms (optional)</label>
+          <input type="text" class="form-control" id="search_terms" name="search_terms" placeholder="term1: value1, term2: value2">
         </div>
-        <div class="register-btn" onclick="redirect('/register')">
-          <i class="fas fa-user-plus"></i>
+        <% if @error_message %>
+        <div class="alert alert-danger" role="alert">
+        <%= @error_message %>
         </div>
-      <% end %>
+        <% end %>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
     </div>
-    <h2 class="mb-4">Search</h2>
-    <form action="/search" method="post">
-      <div class="form-group">
-        <label for="query">Search Query</label>
-        <input type="text" class="form-control" id="query" name="query" required>
+    <footer>
+      <h2 class="mb-4">FAQ</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer('faq-1')">
+          <i class="fas fa-plus"></i> How do I search for a specific item?
+        </div>
+        <div class="faq-answer" id="faq-1">
+          You can search for a specific item by entering your query in the search box on the homepage and clicking the "Search" button.
+        </div>
       </div>
-      <div class="form-group">
-        <label for="search_terms">Search Terms (optional)</label>
-        <input type="text" class="form-control" id="search_terms" name="search_terms" placeholder="term1: value1, term2: value2">
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleAnswer('faq-2')">
+          <i class="fas fa-plus"></i> Can I use advanced search options?
+        </div>
+        <div class="faq-answer" id="faq-2">
+          Yes, you can use advanced search options by including search terms in the "Search Terms" field. Enter the search term followed by a colon and the desired value. For example, "term1: value1, term2: value2".
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary">Search</button>
-    </form>
+    </footer>
   </div>
+
   <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
   <script>
     function redirect(url) {
       window.location.href = url;
     }
 
+    function toggleAnswer(id) {
+      var answer = document.getElementById(id);
+      answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+    }
     function logout() {
       window.location.href = '/logout';
     }

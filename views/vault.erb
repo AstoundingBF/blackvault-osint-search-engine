@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vault</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      background-color: #121212;
+      color: #fff;
+    }
+    .container {
+      max-width: 600px;
+      margin-top: 100px;
+    }
+    label {
+      color: #fff;
+    }
+    .api-key-container {
+      margin-top: 20px;
+      background-color: #212121;
+      padding: 10px;
+    }
+    .api-key {
+      color: #fff;
+      word-break: break-all;
+    }
+    .generate-api-key {
+      margin-top: 20px;
+    }
+    .generate-api-key button {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    .generate-api-key button:hover {
+      background-color: #0069d9;
+      border-color: #0062cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="mb-4">Vault</h2>
+    <div class="api-key-container">
+      <label for="api-key">Your API Key:</label>
+      <div class="api-key"><%= @api_key %></div>
+    </div>
+    <div class="generate-api-key">
+      <button class="btn btn-primary" onclick="generateApiKey()">Generate New API Key</button>
+    </div>
+  </div>
+  <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+  <script>
+    function generateApiKey() {
+      // Add logic to generate a new API key and update it in the vault
+    }
+  </script>
+</body>
+</html>

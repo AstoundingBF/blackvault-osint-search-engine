@@ -153,11 +153,14 @@
               <% if result['Password'] %>
                 <li class="list-group-item">Password: <%= result['Password'] %></li>
               <% end %>
+              <% if result['phone'] %>
+              <li class="list-group-item">PhoneNumber: <%= result['phone'] %></li>
+              <% end %>  
               <% if result['source'] %>
                 <li class="list-group-item">Source: <%= result['source'] %></li>
               <% end %>              
             </ul>
-          </div>
+          </div>>
         </div>
       <% end %>
 
@@ -181,7 +184,7 @@
       popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
     }
   
-    function copyResult(ID, relevance, firstName, lastName, email, DOB, password, source) {
+    function copyResult(ID, relevance, firstName, lastName, email, DOB, password, phone, source) {
       var formattedText = '';
       formattedText += 'ID: ' + ID + '\n';
       formattedText += 'Relevance: ' + relevance + '%\n';
@@ -190,6 +193,7 @@
       formattedText += 'Email: ' + email + '\n';
       formattedText += 'DOB: ' + DOB + '\n';
       formattedText += 'Password: ' + password + '\n';
+      formattedText += 'PhoneNumber: ' + phone + '\n';
       formattedText += 'Source: ' + source + '\n';
    
 

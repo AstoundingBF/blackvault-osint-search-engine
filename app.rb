@@ -3,92 +3,20 @@ require 'csv'
 require 'bcrypt'
 require 'mysql2'
 require 'securerandom'
-before do
-  session[:csrf_token] ||= SecureRandom.hex(32)
-end
+require 'redis'
+require 'json'
 
+redis = Redis.new
 $index = {}
 
-#DB = Mysql2::Client.new(
- # host: 'localhost',
-  #username: 'your_username',
-  #password: 'your_password',
-  #database: 'your_database'
-#)
-
-########################### USER MANAGEMENT ###########################
-
-def validate_csrf_token
-  return if request.get?
-
-  csrf_token = session[:csrf_token]
-  submitted_token = params[:csrf_token]
-
-  halt 403, 'Invalid CSRF token' unless csrf_token && submitted_token && csrf_token == submitted_token
-end
-
-post '/register' do
-  validate_csrf_token
-
-  username = params[:username]
-  password = params[:password]
-
-  if username.empty? || password.empty?
-    return "Please provide a username and password."
-  end
-
-  existing_user = DB.query("SELECT * FROM users WHERE username = '#{DB.escape(username)}'").first
-  if existing_user
-    return "Username already exists. Please choose a different username."
-  end
-
-  password_hash = BCrypt::Password.create(password)
-
-  DB.query("INSERT INTO users (username, password_hash) VALUES ('#{DB.escape(username)}', '#{DB.escape(password_hash)}')")
-
-  redirect '/login'
-end
-
-get '/register' do
-  erb :register
-end
-
-get '/login' do
-  erb :login
-end
-
-post '/login' do
-  validate_csrf_token
-
-  username = params[:username]
-  password = params[:password]
-
-  user = DB.query("SELECT * FROM users WHERE username = '#{DB.escape(username)}'").first
-  if user && BCrypt::Password.new(user['password_hash']) == password
-    session[:logged_in] = true
-    redirect '/'
-  else
-    redirect '/login'
-  end
-end
-
-get '/logout' do
-  session[:logged_in] = false
-  redirect '/'
-end
-
-########################### USER MANAGEMENT ###########################
-
-# Load and index the CSV data
 CSV.foreach('data.csv', headers: true) do |row|
   record = row.to_h
 
-  # Index by ID
   record_id = record['ID']
   $index[record_id] = record
 
   # Index by other fields for faster searching
-  index_fields = ['firstName', 'lastName', 'Email', 'DOB', 'Password', 'source']
+  index_fields = ['firstName', 'lastName', 'Email', 'DOB', 'Password', 'phone', 'source']
   index_fields.each do |field|
     field_value = record[field]
     next if field_value.nil?
@@ -99,14 +27,16 @@ CSV.foreach('data.csv', headers: true) do |row|
   end
 end
 
+get '/dataformats' do
+  erb :dataformats
+end
+
 # Routes
 get '/' do
   erb :index
 end
 
-get '/filter' do
-  erb :filter
-end
+
 
 get '/search' do
   session[:query] = params[:query]
@@ -115,14 +45,33 @@ get '/search' do
 end
 
 post '/search' do
-  query = params[:query]
-  search_terms = parse_search_terms(params[:search_terms])
+  begin
+    query = params[:query]
+    search_terms = parse_search_terms(params[:search_terms])
 
-  results = search_records(query, search_terms)
-  calculate_relevance!(results, query, search_terms)
+    if search_terms_invalid?(search_terms)
+      @error_message = 'Invalid search terms. Please use the correct format.'
+      erb :index
+    else
+      results = search_records(query, search_terms)
+      calculate_relevance!(results, query, search_terms)
 
-  erb :results, locals: { results: results }
+      erb :results, locals: { results: results }
+    end
+  rescue StandardError => e
+    @error_message = 'Invalid search terms. Please use the correct format. Correct format is: <a href="/dataformats">Format Tutorial</a> '
+    erb :index
+  end
 end
+
+def search_terms_invalid?(search_terms)
+  search_terms.each_value do |value|
+    return true if value.nil? || value.strip.empty?
+  end
+  false
+end
+
+
 
 get '/results' do
   query = session[:query]
@@ -226,3 +175,13 @@ def calculate_relevance!(results, query, search_terms)
   results.sort_by! { |result| -result['Relevance'] }  # Sort results by relevance in descending order
 end
 
+def retrieve_search_results(query)
+  cache_key = "search:#{query}"
+  cached_results = redis.get(cache_key)
+
+  if cached_results
+    JSON.parse(cached_results)
+  else
+    perform_search(query)
+  end
+end
