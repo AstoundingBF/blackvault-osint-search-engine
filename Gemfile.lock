@@ -1,14 +1,26 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    bcrypt (3.1.19)
+    cassandra-driver (3.2.5)
+      ione (~> 1.2)
+    connection_pool (2.4.1)
     csv (3.2.7)
+    date (3.3.3)
+    ione (1.2.5)
+    json (2.6.3)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
-    mysql2 (0.5.5)
+    passenger (6.0.18)
+      rack
+      rake (>= 0.8.1)
     rack (2.2.7)
     rack-protection (3.0.6)
       rack
+    rake (13.0.6)
+    redis (5.0.6)
+      redis-client (>= 0.9.0)
+    redis-client (0.14.1)
+      connection_pool
     ruby2_keywords (0.0.5)
     sinatra (3.0.6)
       mustermann (~> 3.0)
@@ -16,15 +28,20 @@ GEM
       rack-protection (= 3.0.6)
       tilt (~> 2.0)
     tilt (2.2.0)
+    time (0.2.2)
+      date
 
 PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  bcrypt
+  cassandra-driver
   csv
-  mysql2
+  json
+  passenger
+  redis
   sinatra
+  time
 
 BUNDLED WITH
    2.3.5
